@@ -1,9 +1,10 @@
 import { Client, cacheExchange, fetchExchange } from 'urql';
 
-export const testnetClient = new Client({
-  url: 'https://indexer.test11.testnets.gno.land/graphql/query',
-  exchanges: [cacheExchange, fetchExchange],
-});
+export const DEFAULT_CHAIN_DOMAIN = 'test12.testnets.gno.land';
 
-// Default to testnet for existing comparisons if not specified
-export const client = testnetClient;
+export function createClient(chainDomain: string = DEFAULT_CHAIN_DOMAIN) {
+  return new Client({
+    url: `https://indexer.${chainDomain}/graphql/query`,
+    exchanges: [cacheExchange, fetchExchange],
+  });
+}

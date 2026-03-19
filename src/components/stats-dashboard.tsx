@@ -1,5 +1,5 @@
 import { Card } from "@/components/ui/card";
-import { testnetClient } from "@/lib/client";
+import { createClient } from "@/lib/client";
 import { Client } from "urql";
 import { Globe, Package as PackageIcon, Users } from "lucide-react";
 
@@ -140,8 +140,8 @@ function StatCard({
   )
 }
 
-export async function StatsDashboard() {
-  const testnetStats = await fetchStats(testnetClient);
+export async function StatsDashboard({ chainDomain }: { chainDomain: string }) {
+  const testnetStats = await fetchStats(createClient(chainDomain));
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">

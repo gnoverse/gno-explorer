@@ -1,7 +1,8 @@
 import { ErrorDisplay } from "@/components/error-display";
-import { testnetClient } from '@/lib/client';
+import { createClient, DEFAULT_CHAIN_DOMAIN } from '@/lib/client';
 import { PackageSearch } from "@/components/package-search";
 import { PackageFilter } from "@/components/package-filter";
+import { ChainSelector } from "@/components/chain-selector";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { StatsDashboard } from "@/components/stats-dashboard";
 import { PackageList } from "@/components/package-list";
@@ -40,14 +41,17 @@ type Package = {
 };
 
 export default async function Home(props: {
-  searchParams?: Promise<{ q?: string; type?: string }>;
+  searchParams?: Promise<{ q?: string; type?: string; chain?: string }>;
 }) {
   const searchParams = await props.searchParams;
   const query = searchParams?.q?.toLowerCase() || "";
   const typeFilter = searchParams?.type || "";
+  const chainDomain = searchParams?.chain || DEFAULT_CHAIN_DOMAIN;
+
+  const client = createClient(chainDomain);
 
   // Fetch data on the server, bypassing all caches for latest packages
-  const result = await testnetClient.query(PACKAGES_QUERY, {}, {
+  const result = await client.query(PACKAGES_QUERY, {}, {
     requestPolicy: 'network-only',
     fetchOptions: { cache: 'no-store' }
   }).toPromise();
@@ -118,13 +122,14 @@ export default async function Home(props: {
           </div>
 
           <div className="flex w-full md:w-auto items-center space-x-3">
+            <ChainSelector />
             <PackageSearch />
             <PackageFilter />
             <ThemeToggle />
           </div>
         </header>
 
-        <StatsDashboard />
+        <StatsDashboard chainDomain={chainDomain} />
 
         <div className="relative pt-4">
           <div className="flex items-center justify-between mb-6">
